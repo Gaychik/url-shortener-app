@@ -8,6 +8,7 @@ from datetime import timedelta, datetime, timezone
 from . import auth
 from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
+
 # Эта команда создает таблицы в БД на основе моделей, если их еще нет
 models.Base.metadata.create_all(bind=engine)
 

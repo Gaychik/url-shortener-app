@@ -2,7 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
-
+import dotenv 
+dotenv.load_dotenv()
 # Используем переменную окружения DATABASE_URL или SQLite по умолчанию для разработки
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
