@@ -1,4 +1,5 @@
 import hashlib
+import uuid
 from sqlalchemy.orm import Session
 from fastapi import Request
 from . import models, schemas
@@ -11,26 +12,36 @@ def get_link_by_original_url(db: Session, original_url: str):
     """Возвращает объект ссылки по ее оригинальному URL."""
     return db.query(models.Link).filter(models.Link.original_url == original_url).first()
 
-def create_short_link(db: Session, link: schemas.LinkCreate):
+def create_short_link(db: Session, link: schemas.LinkCreate, owner_id: int | None = None):
     """Создает короткую ссылку в базе данных."""
-    
-    # 1. Проверяем, не создавали ли мы уже ссылку для этого URL
-    db_link = get_link_by_original_url(db, original_url=str(link.original_url))
-    if db_link:
-        return db_link
-        
-    # 2. Генерируем короткий код
-    # Это простой способ. В реальном проекте стоит предусмотреть коллизии (когда для разных URL получается один хэш).
-    # Например, добавлять к URL соль или использовать другой алгоритм.
-    # Для нашего проекта этого будет достаточно.
-    
-    # Используем первые 7 символов MD5-хэша от URL
-    short_code = hashlib.md5(str(link.original_url).encode()).hexdigest()[:7]
-    
+    original = str(link.original_url)
+    owner = owner_id if owner_id is not None else link.owner_id
+
+    # Если указан владелец — переиспользуем ссылку только если она принадлежит тому же владельцу
+    if owner is not None:
+        db_link = db.query(models.Link).filter(models.Link.original_url == original, models.Link.owner_id == owner).first()
+        if db_link:
+            return db_link
+
+    # Для новых записей (анонимных или других владельцев) — всегда создаём новую короткую ссылку.
+    # Генерация: md5 от (URL|owner|random_uuid) — чтобы разные пользователи получали разные short_code для одного ресурса.
+    short_code = None
+    for _ in range(5):
+        seed = f"{original}|{owner}|{uuid.uuid4().hex}"
+        candidate = hashlib.md5(seed.encode()).hexdigest()[:7]
+        exists = db.query(models.Link).filter(models.Link.short_code == candidate).first()
+        if not exists:
+            short_code = candidate
+            break
+
+    if short_code is None:
+        # В очень редком случае используем uuid как запасной вариант
+        short_code = uuid.uuid4().hex[:7]
+
     db_link = models.Link(
-        original_url=str(link.original_url),
+        original_url=original,
         short_code=short_code,
-        owner_id=link.owner_id, # Добавляем owner_id
+        owner_id=owner, # Добавляем owner_id
         expiration_date=link.expiration_date # Добавляем дату истечения
     )
     db.add(db_link)

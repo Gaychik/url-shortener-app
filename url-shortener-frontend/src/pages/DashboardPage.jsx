@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 // библиотека выдает именованные экспорты, поэтому мы берём нужный компонент
 import { QRCodeCanvas } from 'qrcode.react';
-import { useAuth } from '../context/AuthContext';
-
-const API_URL = 'http://127.0.0.1:8000';
+import { useAuth } from '../context/useAuth';
+import { API_URL } from '../config';
 
 export default function DashboardPage() {
     const { token } = useAuth();

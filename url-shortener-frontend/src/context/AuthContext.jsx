@@ -1,9 +1,9 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
-const AuthContext = createContext();
-const API_URL = 'http://127.0.0.1:8000';
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token'));
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// Хук для удобного использования контекста
-export const useAuth = () => {
-    return useContext(AuthContext);
-};
+// // Хук для удобного использования контекста
+// export const   useAuth = () => {
+//     return useContext(AuthContext);
+// };

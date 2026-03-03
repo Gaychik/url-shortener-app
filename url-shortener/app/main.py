@@ -51,10 +51,9 @@ def create_link(
     Создает новую короткую ссылку.
     Если пользователь аутентифицирован, ссылка будет привязана к его аккаунту.
     """
-    # Если пользователь авторизован, привязываем ссылку к нему
-    if current_user:
-        link.owner_id = current_user.id
-    return crud.create_short_link(db=db, link=link)
+    # Определяем владельца по токену (если есть) и передаём в CRUD
+    owner_id = current_user.id if current_user else None
+    return crud.create_short_link(db=db, link=link, owner_id=owner_id)
 
 
 @app.get("/{short_code}", summary="Редирект по короткой ссылке")

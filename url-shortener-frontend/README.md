@@ -11,6 +11,16 @@ Currently, two official plugins are available:
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
+## Environment variables
+
+The frontend expects the server URL to be provided via an environment variable so that builds can target different backends without editing source files. Create a `.env.local` file at the project root (it's already ignored by `.gitignore`) and add values prefixed with `VITE_`, for example:
+
+```env
+VITE_API_URL=http://127.0.0.1:8000
+```
+
+The app loads the value using `import.meta.env.VITE_API_URL` and falls back to the localhost URL in code.  
+
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

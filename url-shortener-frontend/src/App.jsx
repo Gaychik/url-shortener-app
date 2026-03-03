@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom'; // Импортируем useNavigate
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './context/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
